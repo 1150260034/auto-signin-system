@@ -14,7 +14,10 @@ router.get('/signin', asyncHandler(logController.getSigninLogs));
 router.get('/system', asyncHandler(logController.getSystemLogs));
 
 // 清空日志
-router.delete('/clear', asyncHandler(logController.clearLogs));
+router.post('/clear', asyncHandler(logController.clearLogs));
+
+// 获取日志统计信息
+router.get('/stats', asyncHandler(logController.getLogStats));
 
 // 导出日志
 router.get('/export', asyncHandler(logController.exportLogs));

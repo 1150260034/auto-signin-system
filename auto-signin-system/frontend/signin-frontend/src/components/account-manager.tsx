@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -20,20 +20,30 @@ import {
   AlertCircle,
   Copy,
   Eye,
-  EyeOff
+  EyeOff,
+  TestTube,
+  RefreshCw
 } from 'lucide-react'
 
 interface Account {
   id: string
   name: string
-  platform: string
-  cookie: string
-  headers: string
-  isActive: boolean
-  lastSignin: string
-  status: 'success' | 'failed' | 'pending'
+  description?: string
+  signinUrl: string
+  method: string
+  cookies: string
+  headers?: string
+  requestBody?: string
+  successKeyword?: string
+  enabled: boolean
+  lastSigninAt?: string
+  lastSigninStatus?: string
   createdAt: string
+  updatedAt?: string
 }
+
+// API 基础URL
+const API_BASE_URL = 'http://localhost:3001/api'
 
 const AccountManager: React.FC = () => {
   const { toast } = useToast()

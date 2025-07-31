@@ -1,40 +1,60 @@
-import express from 'express';
-import cors from 'cors';
+import app from './app';
+import { initDatabase } from './models/database';
+import { scheduleService } from './services/scheduleService';
 import { logger } from './utils/logger';
 
-const app = express();
 const PORT = process.env.PORT || 3001;
 
-// 中间件
-app.use(cors());
-app.use(express.json());
+// 初始化调度器函数
+async function initializeScheduler(): Promise<void> {
+  try {
+    scheduleService.startAllTasks();
+    logger.info('定时任务调度器初始化完成');
+  } catch (error) {
+    logger.error('定时任务调度器初始化失败:', error);
+    throw error;
+  }
+}
 
-// 健康检查路由
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', message: '服务器运行正常' });
+async function startServer() {
+  try {
+    // 初始化数据库
+    await initDatabase();
+    logger.info('数据库初始化完成');
+
+    // 初始化定时任务调度器
+    await initializeScheduler();
+    logger.info('定时任务调度器初始化完成');
+
+    // 启动服务器
+    app.listen(PORT, () => {
+      logger.info(`服务器已启动，端口: ${PORT}`);
+      logger.info(`前端界面: http://localhost:5173`);
+      logger.info(`后端API: http://localhost:${PORT}`);
+      logger.info(`健康检查: http://localhost:${PORT}/health`);
+      console.log(`服务器运行在 http://localhost:${PORT}`);
+    });
+
+  } catch (error) {
+    logger.error('服务器启动失败:', error);
+    process.exit(1);
+  }
+}
+
+// 优雅关闭处理
+process.on('SIGTERM', async () => {
+  logger.info('收到SIGTERM信号，开始优雅关闭...');
+  scheduleService.stopAllTasks();
+  process.exit(0);
 });
 
-// 基础API路由
-app.get('/api/accounts', (req, res) => {
-  res.json({ accounts: [], message: '账号列表' });
-});
-
-app.post('/api/accounts', (req, res) => {
-  res.json({ success: true, message: '账号添加成功' });
-});
-
-app.get('/api/logs', (req, res) => {
-  res.json({ logs: [], message: '日志列表' });
-});
-
-app.get('/api/tasks', (req, res) => {
-  res.json({ tasks: [], message: '任务列表' });
+process.on('SIGINT', async () => {
+  logger.info('收到SIGINT信号，开始优雅关闭...');
+  scheduleService.stopAllTasks();
+  process.exit(0);
 });
 
 // 启动服务器
-app.listen(PORT, () => {
-  logger.info(`服务器启动成功，端口: ${PORT}`);
-  console.log(`服务器运行在 http://localhost:${PORT}`);
-});
+startServer();
 
 export default app;

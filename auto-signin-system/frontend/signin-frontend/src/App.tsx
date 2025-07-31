@@ -13,9 +13,10 @@ import {
   Settings,
   CheckCircle
 } from 'lucide-react'
-import AccountManager from './components/account-manager'
-import TaskScheduler from './components/task-scheduler'
-import SigninLogs from './components/signin-logs'
+import AccountManagerAPI from './components/account-manager-api'
+import SigninExecutor from './components/signin-executor'
+import TaskSchedulerApi from './components/task-scheduler-api'
+import SigninLogsApi from './components/signin-logs-api'
 import SystemSettings from './components/system-settings'
 
 function App() {
@@ -108,10 +109,14 @@ function App() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="accounts" className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
                 账号管理
+              </TabsTrigger>
+              <TabsTrigger value="execute" className="flex items-center gap-2">
+                <Activity className="h-4 w-4" />
+                签到执行
               </TabsTrigger>
               <TabsTrigger value="tasks" className="flex items-center gap-2">
                 <Clock className="h-4 w-4" />
@@ -128,15 +133,19 @@ function App() {
             </TabsList>
 
             <TabsContent value="accounts" className="space-y-6">
-              <AccountManager />
+              <AccountManagerAPI />
+            </TabsContent>
+
+            <TabsContent value="execute" className="space-y-6">
+              <SigninExecutor />
             </TabsContent>
 
             <TabsContent value="tasks" className="space-y-6">
-              <TaskScheduler />
+              <TaskSchedulerApi />
             </TabsContent>
 
             <TabsContent value="logs" className="space-y-6">
-              <SigninLogs />
+              <SigninLogsApi />
             </TabsContent>
 
             <TabsContent value="settings" className="space-y-6">

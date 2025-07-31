@@ -176,13 +176,29 @@ const exportLogs = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+// 获取日志统计信息
+const getLogStats = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const stats = await logService.getLogStats();
+
+    res.json({
+      success: true,
+      data: stats
+    });
+  } catch (error) {
+    logger.error('获取日志统计失败:', error);
+    throw new AppError('获取日志统计失败', 500);
+  }
+};
+
 // 导出控制器对象
 const logController = {
   getAllLogs,
   getSigninLogs,
   getSystemLogs,
   clearLogs,
-  exportLogs
+  exportLogs,
+  getLogStats
 };
 
 export default logController;
